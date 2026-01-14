@@ -11,8 +11,40 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
     
-    # Database settings (SQLite for now, MySQL later)
+    # Database settings
+    # For Vercel, we need to use /tmp for sqlite as the file system is read-only
     DATABASE_URL: str = "sqlite:///./billos.db"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        import os
+        import shutil
+        
+        # Check if running in Vercel (env var or directory structure hint)
+        # Vercel file system is read-only except for /tmp
+        if os.environ.get("VERCEL") or os.access('.', os.W_OK) is False:
+            self.DATABASE_URL = "sqlite:////tmp/billos.db"
+            
+            # If original db exists, copy it to tmp (to preserve seeded data)
+            # Use absolute path resolution
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # backend/app/core -> backend
+            original_db = os.path.join(base_dir, "billos.db")
+            target_db = "/tmp/billos.db"
+            
+            # Fallback if moving folders around
+            if not os.path.exists(original_db):
+                # Try looking in current working directory
+                if os.path.exists("billos.db"):
+                    original_db = "billos.db"
+                elif os.path.exists("backend/billos.db"):
+                    original_db = "backend/billos.db"
+
+            if os.path.exists(original_db) and not os.path.exists(target_db):
+                try:
+                    shutil.copy2(original_db, target_db)
+                    print(f"Copied database from {original_db} to {target_db}")
+                except Exception as e:
+                    print(f"Failed to copy DB from {original_db}: {e}") 
     
     # Redis settings (optional for initial development)
     REDIS_URL: str = "redis://localhost:6379/0"

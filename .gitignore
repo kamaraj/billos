@@ -19,3 +19,4 @@ coverage/
 # IDE
 .vscode/
 .idea/
+.vercel
