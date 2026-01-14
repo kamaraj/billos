@@ -1,16 +1,16 @@
 {
+    "buildCommand": "cd frontend && npm install && npm run build",
+    "outputDirectory": "frontend/dist",
+    "framework": null,
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/backend/app/index.py"
-        },
-        {
-            "source": "/((?!api/).*\\..+)",
-            "destination": "/frontend/dist/$1"
-        },
-        {
-            "source": "/((?!api/).*)",
-            "destination": "/frontend/dist/index.html"
+            "destination": "/api/$1"
         }
-    ]
+    ],
+    "functions": {
+        "api/**/*.py": {
+            "runtime": "@vercel/python@4.0.0"
+        }
+    }
 }
