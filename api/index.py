@@ -80,25 +80,82 @@ async def dashboard_stats():
         "total_customers": 25
     }
 
+@app.get("/api/dashboard/summary")
+async def dashboard_summary():
+    return {
+        "today_sales": 15000,
+        "pending_amount": 5000,
+        "low_stock_count": 3,
+        "total_customers": 25,
+        "monthly_revenue": 450000,
+        "total_invoices": 128
+    }
+
+@app.get("/api/dashboard/top-products")
+async def dashboard_top_products(limit: int = 5):
+    return {
+        "items": [
+            {"id": 1, "name": "Premium Widget", "sold": 45, "revenue": 4500},
+            {"id": 2, "name": "Basic Gadget", "sold": 32, "revenue": 3200},
+            {"id": 3, "name": "Pro Tool Kit", "sold": 28, "revenue": 5600},
+            {"id": 4, "name": "Economy Pack", "sold": 22, "revenue": 1100},
+            {"id": 5, "name": "Deluxe Set", "sold": 18, "revenue": 3600},
+        ][:limit]
+    }
+
+@app.get("/api/dashboard/trends")
+async def dashboard_trends(days: int = 7):
+    # Generate mock trend data
+    import datetime
+    trends = []
+    for i in range(days):
+        date = datetime.date.today() - datetime.timedelta(days=days-1-i)
+        trends.append({
+            "date": date.isoformat(),
+            "sales": 10000 + (i * 500),
+            "orders": 10 + i
+        })
+    return {"items": trends}
+
+@app.get("/api/auth/me")
+async def get_current_user():
+    # Demo user - in production this would validate the token
+    return {
+        "id": 1,
+        "name": "Demo Owner",
+        "phone": "9876543210",
+        "role": "OWNER",
+        "tenant_id": 1
+    }
+
 @app.get("/api/products")
 async def get_products():
     return {
         "items": [
-            {"id": 1, "name": "Demo Product 1", "price": 100, "stock": 50},
-            {"id": 2, "name": "Demo Product 2", "price": 200, "stock": 30},
+            {"id": 1, "name": "Premium Widget", "sku": "WDG-001", "price": 100, "stock": 50, "category": "Widgets"},
+            {"id": 2, "name": "Basic Gadget", "sku": "GDG-001", "price": 200, "stock": 30, "category": "Gadgets"},
+            {"id": 3, "name": "Pro Tool Kit", "sku": "TLK-001", "price": 500, "stock": 15, "category": "Tools"},
         ],
-        "total": 2
+        "total": 3
     }
 
 @app.get("/api/customers")
 async def get_customers():
     return {
         "items": [
-            {"id": 1, "name": "Demo Customer", "phone": "9999999999", "balance": 0},
+            {"id": 1, "name": "Acme Corp", "phone": "9999999999", "email": "contact@acme.com", "balance": 2500},
+            {"id": 2, "name": "Tech Solutions", "phone": "8888888888", "email": "info@techsol.com", "balance": 0},
         ],
-        "total": 1
+        "total": 2
     }
 
 @app.get("/api/invoices")
 async def get_invoices():
-    return {"items": [], "total": 0}
+    return {
+        "items": [
+            {"id": 1, "invoice_no": "INV-001", "customer": "Acme Corp", "total": 5000, "status": "PAID", "date": "2026-01-15"},
+            {"id": 2, "invoice_no": "INV-002", "customer": "Tech Solutions", "total": 3500, "status": "PENDING", "date": "2026-01-16"},
+        ],
+        "total": 2
+    }
+
