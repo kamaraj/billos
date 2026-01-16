@@ -83,39 +83,48 @@ async def dashboard_stats():
 @app.get("/api/dashboard/summary")
 async def dashboard_summary():
     return {
-        "today_sales": 15000,
-        "pending_amount": 5000,
-        "low_stock_count": 3,
-        "total_customers": 25,
-        "monthly_revenue": 450000,
-        "total_invoices": 128
+        "today": {
+            "sales": 15000,
+            "cash_collected": 12500,
+            "invoice_count": 8
+        },
+        "comparison": {
+            "vs_yesterday_pct": 115
+        },
+        "alerts": {
+            "total_outstanding": 25000,
+            "overdue_customers": 3,
+            "low_stock_items": 5
+        }
     }
 
 @app.get("/api/dashboard/top-products")
 async def dashboard_top_products(limit: int = 5):
-    return {
-        "items": [
-            {"id": 1, "name": "Premium Widget", "sold": 45, "revenue": 4500},
-            {"id": 2, "name": "Basic Gadget", "sold": 32, "revenue": 3200},
-            {"id": 3, "name": "Pro Tool Kit", "sold": 28, "revenue": 5600},
-            {"id": 4, "name": "Economy Pack", "sold": 22, "revenue": 1100},
-            {"id": 5, "name": "Deluxe Set", "sold": 18, "revenue": 3600},
-        ][:limit]
-    }
+    # Return as array (not object with items key)
+    products = [
+        {"product_id": 1, "product_name": "Premium Widget", "qty_sold": 45, "revenue": 4500},
+        {"product_id": 2, "product_name": "Basic Gadget", "qty_sold": 32, "revenue": 3200},
+        {"product_id": 3, "product_name": "Pro Tool Kit", "qty_sold": 28, "revenue": 5600},
+        {"product_id": 4, "product_name": "Economy Pack", "qty_sold": 22, "revenue": 1100},
+        {"product_id": 5, "product_name": "Deluxe Set", "qty_sold": 18, "revenue": 3600},
+    ]
+    return products[:limit]
 
 @app.get("/api/dashboard/trends")
 async def dashboard_trends(days: int = 7):
-    # Generate mock trend data
+    # Generate mock trend data with 'day' field for short day name
     import datetime
+    day_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     trends = []
     for i in range(days):
         date = datetime.date.today() - datetime.timedelta(days=days-1-i)
         trends.append({
             "date": date.isoformat(),
+            "day": day_names[date.weekday()],
             "sales": 10000 + (i * 500),
             "orders": 10 + i
         })
-    return {"items": trends}
+    return {"trends": trends}
 
 @app.get("/api/auth/me")
 async def get_current_user():
