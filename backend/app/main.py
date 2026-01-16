@@ -1,9 +1,10 @@
 """BillOS - Daily Business OS for MSMEs."""
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.core.database import init_db
+from app.core.database import init_db, SessionLocal
 from app.api import auth, products, customers, invoices, dashboard
 
 # Create FastAPI app
@@ -30,10 +31,66 @@ app.include_router(invoices.router)
 app.include_router(dashboard.router)
 
 
+def seed_demo_data():
+    """Seed demo data for Vercel deployment (ephemeral /tmp database)."""
+    from app.models.tenant import Tenant
+    from app.models.user import User
+    from app.core.auth import get_password_hash
+    
+    db = SessionLocal()
+    try:
+        # Check if data exists
+        existing_tenant = db.query(Tenant).first()
+        if existing_tenant:
+            return  # Already seeded
+        
+        # Create demo tenant
+        tenant = Tenant(
+            name="Demo Business",
+            business_type="Retail",
+            address="123 Demo Street",
+            phone="9876543210",
+            email="demo@billos.app",
+            plan="BUSINESS"
+        )
+        db.add(tenant)
+        db.commit()
+        db.refresh(tenant)
+        
+        # Create demo users
+        demo_users = [
+            {"name": "Demo Owner", "phone": "9876543210", "password": "demo123", "role": "OWNER"},
+            {"name": "Demo Manager", "phone": "9876543211", "password": "demo123", "role": "MANAGER"},
+        ]
+        
+        for u in demo_users:
+            user = User(
+                tenant_id=tenant.id,
+                name=u["name"],
+                phone=u["phone"],
+                password_hash=get_password_hash(u["password"]),
+                role=u["role"],
+                is_active=True
+            )
+            db.add(user)
+        
+        db.commit()
+        print("Demo data seeded successfully!")
+        
+    except Exception as e:
+        print(f"Error seeding demo data: {e}")
+        db.rollback()
+    finally:
+        db.close()
+
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize database on startup."""
     init_db()
+    # Seed demo data on Vercel (ephemeral database)
+    if os.environ.get("VERCEL"):
+        seed_demo_data()
 
 
 @app.get("/")
@@ -54,3 +111,4 @@ async def health_check():
         "database": "connected",
         "version": settings.APP_VERSION
     }
+

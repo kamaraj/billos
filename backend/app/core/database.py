@@ -4,10 +4,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
+# Get the effective database URL (handles Vercel /tmp automatically)
+db_url = settings.effective_database_url
+
 # Create engine - SQLite for now, can switch to MySQL later
 engine = create_engine(
-    settings.DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {},
+    db_url,
+    connect_args={"check_same_thread": False} if "sqlite" in db_url else {},
     echo=settings.DEBUG
 )
 
@@ -32,3 +35,4 @@ def init_db():
     # Import all models here to ensure they are registered
     from app.models import tenant, user, customer, product, invoice, payment, inventory
     Base.metadata.create_all(bind=engine)
+
