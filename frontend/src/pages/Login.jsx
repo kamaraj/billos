@@ -238,9 +238,10 @@ function Login() {
                         </p>
                         <div style={{ display: 'grid', gap: 'var(--space-sm)' }}>
                             {[
-                                { name: "Abdulla Al-Thani", role: "Owner", phone: "97411112222", pass: "pass" },
-                                { name: "Mohammed Ali", role: "Manager", phone: "97433334444", pass: "pass" },
-                                { name: "Pareekutty", role: "Cashier", phone: "97455556666", pass: "pass" }
+                                { name: "Demo Owner", role: "Owner", phone: "9876543210", pass: "demo123" },
+                                { name: "Demo Manager", role: "Manager", phone: "9876543211", pass: "demo123" },
+                                { name: "Test User", role: "Owner", phone: "97455556666", pass: "pass" },
+                                { name: "Quick Login", role: "Owner", phone: "1234567890", pass: "1234" }
                             ].map(user => (
                                 <button
                                     key={user.phone}
