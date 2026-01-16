@@ -34,7 +34,7 @@ function Invoices() {
                 api.get('/api/invoices/summary')
             ])
 
-            setInvoices(invoicesRes.data)
+            setInvoices(invoicesRes.data.items || [])
             setSummary(summaryRes.data)
         } catch (err) {
             console.error('Fetch error:', err)
@@ -183,25 +183,25 @@ function Invoices() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{formatDate(invoice.invoice_date)}</td>
-                                    <td>{invoice.customer_name || 'Walk-in'}</td>
-                                    <td style={{ fontWeight: 600 }}>{formatCurrency(invoice.total_amount)}</td>
+                                    <td>{formatDate(invoice.date || invoice.invoice_date)}</td>
+                                    <td>{invoice.customer || invoice.customer_name || 'Walk-in'}</td>
+                                    <td style={{ fontWeight: 600 }}>{formatCurrency(invoice.total || invoice.total_amount)}</td>
                                     <td style={{ color: 'var(--color-success)' }}>
-                                        {formatCurrency(invoice.paid_amount)}
+                                        {formatCurrency(invoice.paid_amount || (invoice.status === 'PAID' ? (invoice.total || invoice.total_amount) : 0))}
                                     </td>
                                     <td style={{
-                                        color: invoice.balance_amount > 0 ? 'var(--color-warning)' : 'var(--color-text-muted)'
+                                        color: (invoice.balance_amount || 0) > 0 ? 'var(--color-warning)' : 'var(--color-text-muted)'
                                     }}>
-                                        {formatCurrency(invoice.balance_amount)}
+                                        {formatCurrency(invoice.balance_amount || (invoice.status === 'PENDING' ? (invoice.total || invoice.total_amount) : 0))}
                                     </td>
                                     <td>
-                                        {invoice.payment_status === 'PAID' && (
+                                        {(invoice.status === 'PAID' || invoice.payment_status === 'PAID') && (
                                             <span className="badge badge-success">Paid</span>
                                         )}
-                                        {invoice.payment_status === 'PARTIAL' && (
+                                        {(invoice.status === 'PARTIAL' || invoice.payment_status === 'PARTIAL') && (
                                             <span className="badge badge-warning">Partial</span>
                                         )}
-                                        {invoice.payment_status === 'UNPAID' && (
+                                        {(invoice.status === 'PENDING' || invoice.payment_status === 'UNPAID') && (
                                             <span className="badge badge-danger">Unpaid</span>
                                         )}
                                     </td>

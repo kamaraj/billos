@@ -23,7 +23,7 @@ function Customers() {
     const fetchCustomers = async () => {
         try {
             const res = await api.get('/api/customers/')
-            setCustomers(res.data)
+            setCustomers(res.data.items || [])
         } catch (err) {
             console.error('Fetch error:', err)
         } finally {
@@ -139,7 +139,7 @@ function Customers() {
                         </div>
                         <div className="card-title">Total Outstanding</div>
                         <div className="card-value">
-                            {formatCurrency(customers.reduce((sum, c) => sum + c.current_balance, 0))}
+                            {formatCurrency(customers.reduce((sum, c) => sum + (c.balance || c.current_balance || 0), 0))}
                         </div>
                     </div>
                     <div className="stat-card">
@@ -216,18 +216,18 @@ function Customers() {
                                     </td>
                                     <td>
                                         <span style={{
-                                            color: customer.current_balance > 0 ? 'var(--color-warning)' : 'var(--color-success)',
+                                            color: (customer.balance || 0) > 0 ? 'var(--color-warning)' : 'var(--color-success)',
                                             fontWeight: 600
                                         }}>
-                                            {formatCurrency(customer.current_balance)}
+                                            {formatCurrency(customer.balance || 0)}
                                         </span>
                                     </td>
-                                    <td>{formatCurrency(customer.credit_limit)}</td>
-                                    <td>{formatCurrency(customer.total_purchases)}</td>
+                                    <td>{formatCurrency(customer.credit_limit || 0)}</td>
+                                    <td>{formatCurrency(customer.total_purchases || 0)}</td>
                                     <td>
                                         {customer.risk_tag === 'HIGH_RISK' ? (
                                             <span className="badge badge-danger">High Risk</span>
-                                        ) : customer.current_balance > 0 ? (
+                                        ) : (customer.balance || 0) > 0 ? (
                                             <span className="badge badge-warning">Outstanding</span>
                                         ) : (
                                             <span className="badge badge-success">Good</span>

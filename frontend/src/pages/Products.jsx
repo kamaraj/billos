@@ -27,7 +27,8 @@ function Products() {
     const fetchProducts = async () => {
         try {
             const res = await api.get('/api/products/')
-            setProducts(res.data)
+            // Handle { items: [...], total: N } response
+            setProducts(res.data.items || [])
         } catch (err) {
             console.error('Fetch error:', err)
         } finally {
@@ -47,10 +48,11 @@ function Products() {
             const data = {
                 ...formData,
                 cost_price: parseFloat(formData.cost_price) || 0,
-                selling_price: parseFloat(formData.selling_price),
+                // Map form's selling_price to API's price
+                price: parseFloat(formData.selling_price),
                 gst_rate: parseFloat(formData.gst_rate),
                 reorder_level: parseFloat(formData.reorder_level),
-                initial_stock: parseFloat(formData.initial_stock)
+                stock: parseFloat(formData.initial_stock) // Map initial_stock to stock
             }
 
             if (editProduct) {
@@ -74,14 +76,15 @@ function Products() {
                 name: product.name,
                 sku: product.sku || '',
                 category: product.category || '',
-                cost_price: product.cost_price.toString(),
-                selling_price: product.selling_price.toString(),
-                gst_rate: product.gst_rate.toString(),
-                reorder_level: product.reorder_level.toString(),
-                unit: product.unit,
+                cost_price: (product.cost_price || 0).toString(),
+                selling_price: (product.price || 0).toString(), // Map price to form
+                gst_rate: (product.gst_rate || 0).toString(), // Default to 0 if missing
+                reorder_level: (product.reorder_level || 10).toString(),
+                unit: product.unit || 'PCS',
                 initial_stock: '0'
             })
         } else {
+            // ... (rest of reset logic)
             setEditProduct(null)
             setFormData({
                 name: '',
@@ -195,23 +198,23 @@ function Products() {
                                     <td>{product.sku || '-'}</td>
                                     <td>{product.category || '-'}</td>
                                     <td>
-                                        <div>{formatCurrency(product.selling_price)}</div>
+                                        <div>{formatCurrency(product.price)}</div>
                                         <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                                            Cost: {formatCurrency(product.cost_price)}
+                                            Cost: {formatCurrency(product.cost_price || 0)}
                                         </div>
                                     </td>
                                     <td>
                                         <span style={{
-                                            color: product.current_stock <= product.reorder_level
+                                            color: product.stock <= (product.reorder_level || 10)
                                                 ? 'var(--color-danger)'
                                                 : 'var(--color-text)'
                                         }}>
-                                            {product.current_stock}
+                                            {product.stock}
                                         </span>
                                     </td>
-                                    <td>{product.gst_rate}%</td>
+                                    <td>{product.gst_rate || 0}%</td>
                                     <td>
-                                        {product.current_stock <= product.reorder_level ? (
+                                        {product.stock <= (product.reorder_level || 10) ? (
                                             <span className="badge badge-warning">
                                                 <AlertTriangle size={12} style={{ marginRight: 4 }} />
                                                 Low Stock

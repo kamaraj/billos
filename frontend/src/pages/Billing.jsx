@@ -21,8 +21,9 @@ function Billing() {
                 api.get('/api/products/'),
                 api.get('/api/customers/')
             ])
-            setProducts(productsRes.data)
-            setCustomers(customersRes.data)
+            // API returns { items: [...], total: N }
+            setProducts(productsRes.data.items || [])
+            setCustomers(customersRes.data.items || [])
         } catch (err) {
             console.error('Fetch error:', err)
         } finally {
@@ -34,7 +35,7 @@ function Billing() {
         const existing = cart.find(item => item.product_id === product.id)
 
         if (existing) {
-            if (existing.qty < product.current_stock) {
+            if (existing.qty < product.stock) { // Use 'stock' from API, not 'current_stock'
                 setCart(cart.map(item =>
                     item.product_id === product.id
                         ? { ...item, qty: item.qty + 1 }
@@ -42,14 +43,14 @@ function Billing() {
                 ))
             }
         } else {
-            if (product.current_stock > 0) {
+            if (product.stock > 0) {
                 setCart([...cart, {
                     product_id: product.id,
                     product_name: product.name,
-                    unit_price: product.selling_price,
+                    unit_price: product.price, // API returns 'price'
                     qty: 1,
-                    stock: product.current_stock,
-                    gst_rate: product.gst_rate
+                    stock: product.stock,
+                    gst_rate: 0 // Mock API doesn't have tax yet
                 }])
             }
         }
@@ -205,12 +206,13 @@ function Billing() {
                                         onClick={() => addToCart(product)}
                                     >
                                         <div className="product-name">{product.name}</div>
-                                        <div className="product-price">{formatCurrency(product.selling_price)}</div>
+                                        <div className="product-price">{formatCurrency(product.price)}</div>
                                         <div className="product-stock">
-                                            Stock: {product.current_stock} {product.unit}
+                                            Stock: {product.stock}
                                             {inCart && <span style={{ color: 'var(--color-success)' }}> • In cart: {inCart.qty}</span>}
                                         </div>
-                                        {product.current_stock <= product.reorder_level && (
+                                        {/* Mock Low stock check */}
+                                        {product.stock <= 10 && (
                                             <span className="badge badge-warning" style={{ marginTop: 'var(--space-sm)' }}>
                                                 Low Stock
                                             </span>
