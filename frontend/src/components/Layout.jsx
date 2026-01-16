@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
     LayoutDashboard,
@@ -9,12 +10,20 @@ import {
     Settings,
     LogOut,
     TrendingUp,
-    AlertTriangle
+    AlertTriangle,
+    Menu,
+    X
 } from 'lucide-react'
 
 function Layout({ children }) {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const location = useLocation()
+
+    useEffect(() => {
+        setMobileMenuOpen(false)
+    }, [location])
 
     const handleLogout = () => {
         logout()
@@ -23,8 +32,27 @@ function Layout({ children }) {
 
     return (
         <div className="app-container">
+            {/* Mobile Header */}
+            <header className="mobile-header">
+                <div className="logo">
+                    <div className="logo-icon" style={{ width: 32, height: 32 }}>
+                        <Receipt size={20} color="white" />
+                    </div>
+                    <span className="logo-text" style={{ fontSize: '1.25rem' }}>BillOS</span>
+                </div>
+                <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                    {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+            </header>
+
+            {/* Mobile Overlay */}
+            <div
+                className={`mobile-overlay ${mobileMenuOpen ? 'open' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+            />
+
             {/* Sidebar */}
-            <aside className="sidebar">
+            <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
                 <div className="sidebar-header">
                     <div className="logo">
                         <div className="logo-icon">

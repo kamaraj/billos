@@ -877,3 +877,125 @@ a:hover {
     padding: var(--space-md);
   }
 }
+/* ============================================
+   Mobile Responsiveness
+   ============================================ */
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  z-index: 90;
+  padding: 0 var(--space-lg);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-menu-btn {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  padding: var(--space-sm);
+  cursor: pointer;
+}
+
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 95;
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 768px) {
+  /* Layout */
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--transition-normal);
+    width: 280px;
+    z-index: 100;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .mobile-header {
+    display: flex;
+  }
+
+  .mobile-overlay.open {
+    display: block;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding-top: 60px; /* Space for mobile header */
+    width: 100%;
+  }
+  
+  .page-header {
+    top: 60px; /* Push down below mobile header */
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .page-content {
+    padding: var(--space-md);
+  }
+
+  /* Typography */
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  
+  /* Grid Layouts */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .billing-container {
+    grid-template-columns: 1fr;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cart-panel {
+    order: -1; /* Show cart on top or make it collapsible? For now put on top */
+    min-height: auto;
+    max-height: 400px;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    max-height: 500px;
+  }
+
+  /* Tables */
+  .table th, .table td {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.8rem;
+  }
+  
+  .table-container {
+      overflow-x: auto;
+  }
+
+  /* Quick Actions */
+  .btn-lg {
+    padding: var(--space-md);
+    font-size: 0.875rem;
+    flex: 1;
+    justify-content: center;
+  }
+}
