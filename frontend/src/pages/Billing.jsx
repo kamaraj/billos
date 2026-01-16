@@ -18,8 +18,8 @@ function Billing() {
     const fetchData = async () => {
         try {
             const [productsRes, customersRes] = await Promise.all([
-                api.get('/api/products/'),
-                api.get('/api/customers/')
+                api.get('/api/products'),
+                api.get('/api/customers')
             ])
             // API returns { items: [...], total: N }
             setProducts(productsRes.data.items || [])

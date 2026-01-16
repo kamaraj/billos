@@ -30,7 +30,7 @@ function Invoices() {
             if (statusFilter) params.payment_status = statusFilter
 
             const [invoicesRes, summaryRes] = await Promise.all([
-                api.get('/api/invoices/', { params }),
+                api.get('/api/invoices', { params }),
                 api.get('/api/invoices/summary')
             ])
 

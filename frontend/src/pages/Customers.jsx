@@ -22,7 +22,7 @@ function Customers() {
 
     const fetchCustomers = async () => {
         try {
-            const res = await api.get('/api/customers/')
+            const res = await api.get('/api/customers')
             setCustomers(res.data.items || [])
         } catch (err) {
             console.error('Fetch error:', err)
@@ -44,11 +44,10 @@ function Customers() {
                 ...formData,
                 credit_limit: parseFloat(formData.credit_limit) || 0
             }
-
             if (editCustomer) {
                 await api.put(`/api/customers/${editCustomer.id}`, data)
             } else {
-                await api.post('/api/customers/', data)
+                await api.post('/api/customers', data)
             }
 
             fetchCustomers()

@@ -26,7 +26,7 @@ function Products() {
 
     const fetchProducts = async () => {
         try {
-            const res = await api.get('/api/products/')
+            const res = await api.get('/api/products')
             // Handle { items: [...], total: N } response
             setProducts(res.data.items || [])
         } catch (err) {
@@ -54,11 +54,10 @@ function Products() {
                 reorder_level: parseFloat(formData.reorder_level),
                 stock: parseFloat(formData.initial_stock) // Map initial_stock to stock
             }
-
             if (editProduct) {
                 await api.put(`/api/products/${editProduct.id}`, data)
             } else {
-                await api.post('/api/products/', data)
+                await api.post('/api/products', data)
             }
 
             fetchProducts()
