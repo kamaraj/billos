@@ -51,7 +51,12 @@ async def root():
 
 @app.get("/api/health")
 async def health():
-    return {"status": "healthy", "database": "demo-mode", "version": "1.0.0"}
+    return {
+        "status": "healthy",
+        "database": "demo-mode",
+        "version": "1.0.1",
+        "updated": "2026-01-16T14:50:00"
+    }
 
 @app.post("/api/auth/login", response_model=Token)
 async def login(data: UserLogin):
