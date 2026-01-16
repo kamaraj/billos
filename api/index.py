@@ -15,6 +15,8 @@ DEMO_USERS = {
     "9876543211": {"name": "Demo Manager", "password_hash": hashlib.sha256("demo123".encode()).hexdigest(), "role": "MANAGER"},
     "97455556666": {"name": "Test User", "password_hash": hashlib.sha256("pass".encode()).hexdigest(), "role": "OWNER"},
     "1234567890": {"name": "Quick Login", "password_hash": hashlib.sha256("1234".encode()).hexdigest(), "role": "OWNER"},
+    "97411112222": {"name": "Abdulla Al-Thani", "password_hash": hashlib.sha256("1234".encode()).hexdigest(), "role": "OWNER"},
+    "97433334444": {"name": "Mohammed Ali", "password_hash": hashlib.sha256("1234".encode()).hexdigest(), "role": "MANAGER"},
 }
 
 # FastAPI app
