@@ -1,36 +1,26 @@
 """
 Vercel Serverless Function Entry Point for BillOS API.
+
+This module serves as the entry point for the Vercel Python runtime.
+It imports the FastAPI app and exports it as 'app' for Vercel's ASGI handler.
 """
-from http.server import BaseHTTPRequestHandler
-import json
 import sys
 import os
 
-# Add the backend directory to the path
-backend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'backend')
-sys.path.insert(0, backend_dir)
+# Add the backend directory to the path BEFORE any imports
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
+backend_dir = os.path.join(project_root, 'backend')
+
+# Insert at the beginning of sys.path
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
 
 # Set VERCEL environment variable before importing app
 os.environ["VERCEL"] = "1"
 
-try:
-    from app.main import app
-    # For Vercel Python runtime with FastAPI
-    handler = app
-except Exception as e:
-    # Fallback error handler if import fails
-    class handler(BaseHTTPRequestHandler):
-        def do_GET(self):
-            self.send_response(500)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            error_msg = json.dumps({
-                "error": "Failed to initialize API",
-                "detail": str(e),
-                "backend_dir": backend_dir,
-                "sys_path": sys.path[:5]
-            })
-            self.wfile.write(error_msg.encode())
-        
-        def do_POST(self):
-            self.do_GET()
+# Import the FastAPI app - Vercel expects this to be named 'app'
+from app.main import app
+
+# Export app for Vercel (this is the ASGI application)
+# Vercel's @vercel/python runtime automatically detects ASGI apps
