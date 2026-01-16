@@ -18,7 +18,7 @@ DEMO_USERS = {
 }
 
 # FastAPI app
-app = FastAPI(title="BillOS API", version="1.0.2")
+app = FastAPI(title="BillOS API", version="1.0.3")
 
 # CORS
 app.add_middleware(
@@ -107,11 +107,11 @@ async def dashboard_summary():
 async def dashboard_top_products(limit: int = 5):
     # Return as array (not object with items key)
     products = [
-        {"product_id": 1, "product_name": "Premium Widget", "qty_sold": 45, "revenue": 4500},
-        {"product_id": 2, "product_name": "Basic Gadget", "qty_sold": 32, "revenue": 3200},
-        {"product_id": 3, "product_name": "Pro Tool Kit", "qty_sold": 28, "revenue": 5600},
-        {"product_id": 4, "product_name": "Economy Pack", "qty_sold": 22, "revenue": 1100},
-        {"product_id": 5, "product_name": "Deluxe Set", "qty_sold": 18, "revenue": 3600},
+        {"product_id": 1, "product_name": "Chicken Biryani (Full)", "qty_sold": 45, "revenue": 11250},
+        {"product_id": 2, "product_name": "Mutton Biryani (Full)", "qty_sold": 32, "revenue": 11200},
+        {"product_id": 3, "product_name": "Paneer Butter Masala", "qty_sold": 28, "revenue": 7000},
+        {"product_id": 4, "product_name": "Coca Cola 500ml", "qty_sold": 120, "revenue": 6000},
+        {"product_id": 5, "product_name": "Shawarma Plate", "qty_sold": 55, "revenue": 8250},
     ]
     return products[:limit]
 
@@ -146,30 +146,37 @@ async def get_current_user():
 async def get_products():
     return {
         "items": [
-            {"id": 1, "name": "Premium Widget", "sku": "WDG-001", "price": 100, "stock": 50, "category": "Widgets"},
-            {"id": 2, "name": "Basic Gadget", "sku": "GDG-001", "price": 200, "stock": 30, "category": "Gadgets"},
-            {"id": 3, "name": "Pro Tool Kit", "sku": "TLK-001", "price": 500, "stock": 15, "category": "Tools"},
+            {"id": 1, "name": "Chicken Biryani (Full)", "sku": "FD-001", "price": 250, "stock": 50, "category": "Main Course"},
+            {"id": 2, "name": "Mutton Biryani (Full)", "sku": "FD-002", "price": 350, "stock": 40, "category": "Main Course"},
+            {"id": 3, "name": "Paneer Butter Masala", "sku": "FD-003", "price": 250, "stock": 35, "category": "Curry"},
+            {"id": 4, "name": "Butter Naan", "sku": "FD-004", "price": 40, "stock": 100, "category": "Breads"},
+            {"id": 5, "name": "Coca Cola 500ml", "sku": "BV-001", "price": 50, "stock": 200, "category": "Beverages"},
+            {"id": 6, "name": "Shawarma Plate", "sku": "FD-005", "price": 150, "stock": 60, "category": "Snacks"},
+            {"id": 7, "name": "Fresh Lime Soda", "sku": "BV-002", "price": 40, "stock": 150, "category": "Beverages"},
         ],
-        "total": 3
+        "total": 7
     }
 
 @app.get("/api/customers")
 async def get_customers():
     return {
         "items": [
-            {"id": 1, "name": "Acme Corp", "phone": "9999999999", "email": "contact@acme.com", "balance": 2500},
-            {"id": 2, "name": "Tech Solutions", "phone": "8888888888", "email": "info@techsol.com", "balance": 0},
+            {"id": 1, "name": "Walk-in Customer", "phone": "9999999999", "email": "", "balance": 0},
+            {"id": 2, "name": "Swiggy Partner", "phone": "8888888888", "email": "partners@swiggy.in", "balance": 0},
+            {"id": 3, "name": "Zomato Partner", "phone": "7777777777", "email": "partners@zomato.com", "balance": 1500},
         ],
-        "total": 2
+        "total": 3
     }
 
 @app.get("/api/invoices")
 async def get_invoices():
+    # Make sure items is NOT empty initially to avoid empty state confusion
     return {
         "items": [
-            {"id": 1, "invoice_no": "INV-001", "customer": "Acme Corp", "total": 5000, "status": "PAID", "date": "2026-01-15"},
-            {"id": 2, "invoice_no": "INV-002", "customer": "Tech Solutions", "total": 3500, "status": "PENDING", "date": "2026-01-16"},
+            {"id": 1, "invoice_no": "INV-1001", "customer": "Walk-in Customer", "total": 650, "status": "PAID", "date": "2026-01-16"},
+            {"id": 2, "invoice_no": "INV-1002", "customer": "Swiggy Order", "total": 1200, "status": "PAID", "date": "2026-01-16"},
+            {"id": 3, "invoice_no": "INV-1003", "customer": "Zomato Order", "total": 850, "status": "PENDING", "date": "2026-01-16"},
         ],
-        "total": 2
+        "total": 3
     }
 
